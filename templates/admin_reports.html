@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>Διαχείριση Αναφορών</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 16px;
+            background-color: #fefcf8; /* άλλαξε εδώ για άλλο φόντο */
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f2f2f2;
+            margin-bottom: 10px;
+        }
+
+        .top-bar a {
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .logout {
+            color: red;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+
+        label, select {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        select {
+            padding: 6px;
+            border-radius: 8px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 14px;
+            font-size: 18px;
+        }
+
+        .inline {
+            display: inline;
+        }
+
+        .delete-btn {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 4px 10px;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .top-bar a {
+                font-size: 16px;
+            }
+
+            select {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="{{ url_for('dashboard') }}">⬅ Dashboard</a>
+    <a href="{{ url_for('logout') }}" class="logout">Αποσύνδεση</a>
+</div>
+
+<h2>Διαχείριση Αναφορών</h2>
+
+<form method="get" action="{{ url_for('admin_reports') }}">
+    <label>Σύμβουλος:
+        <select name="consultant" onchange="this.form.submit()">
+            <option value="">-- Επιλογή --</option>
+            {% for c in consultants %}
+                <option value="{{ c }}" {% if c == selected_consultant %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <label>Ημερομηνία:
+        <select name="date" onchange="this.form.submit()">
+            <option value="">-- Επιλογή --</option>
+            {% for date in available_dates %}
+                <option value="{{ date }}" {% if date == selected_date %}selected{% endif %}>{{ date }}</option>
+            {% endfor %}
+        </select>
+    </label>
+</form>
+
+{% if reports %}
+    <h3>Αναφορές για {{ selected_consultant }} την {{ selected_date }}:</h3>
+    <ul>
+        {% for r in reports %}
+            <li>
+                <strong>{{ r.store }}</strong>: 
+                <a href="{{ r.path }}" target="_blank">{{ r.filename }}</a>
+                <form action="{{ url_for('delete_report') }}" method="post" class="inline" onsubmit="return confirm('Να διαγραφεί το αρχείο {{ r.filename }};');">
+                    <input type="hidden" name="file_path" value="{{ r.path }}">
+                    <button type="submit" class="delete-btn">Διαγραφή</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,692 @@
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background-color: #f0f0f0;">
+    <a href="{{ url_for('dashboard') }}" style="font-size: 50px; color: #333; text-decoration: none;">⬅ Dashboard</a>
+    <a href="{{ url_for('logout') }}" style="font-size: 50px; color: red; text-decoration: none;">Αποσύνδεση</a>
+</div>
+<h2>Checklist Καταστήματος</h2>
+<hr style="margin-top: 5px;">
+<style>
+
+    select.store-select {
+        font-size: 50px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 900px;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 30px;
+        padding: 20px;
+		background-color : #fefcf8;
+    }
+
+    h2, h3 {
+        font-size: 70px;
+        margin-top: 20px;
+        color: #222;
+		text-align: center;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 50px;
+    }
+
+    input[type="radio"], input[type="checkbox"] {
+        transform: scale(1.5);
+        margin-right: 10px;
+    }
+
+    .section-title {
+        margin-top: 25px;
+        font-size: 70px;
+        font-weight: bold;
+        border-bottom: 1px solid #aaa;
+        padding-bottom: 5px;
+    }
+
+    .question {
+        margin: 10px 0;
+        padding-left: 10px;
+    }
+
+    select, input[type="text"], input[type="number"] {
+        font-size: 50px;
+        padding: 8px;
+        width: 100%;
+        max-width: 300px;
+        margin-bottom: 15px;
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 50px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 6px;
+    }
+</style>
+
+<form method="POST" action="{{ url_for('submit_checklist') }}">
+    <label>Κατάστημα:</label><br>
+    <select name="store_name" class="store-select">
+        {% for store in stores %}
+            <option value="{{ store }}">{{ store }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label>Όνομα Συμβούλου:</label><br>
+    <input type="text" name="consultant_name" value="{{ username }}" readonly><br><br>
+
+    <label>Ημερομηνία:</label>
+    <input type="text" name="date" value="{{ date }}" readonly><br><br>
+
+    <label>Ώρα:</label>
+    <input type="text" name="time" value="{{ time }}" readonly><br><br>
+
+
+        <!-- Εδώ μπαίνει ΟΛΟ το υπόλοιπο σώμα της φόρμας σου με τις κατηγορίες (ΠΡΟΣΩΠΙΚΟ, ΕΣΩΤΕΡΙΚΟ κλπ) όπως το έχεις -->
+
+        <!-- ΠΡΟΣΩΠΙΚΟ -->
+        <hr><h3>ΠΡΟΣΩΠΙΚΟ</h3>
+        
+            <label>1. Μαζεμένα Μαλλιά / Όχι Πρόσθετα Νύχια</label>
+				<select name="prosopiko_1">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+
+			<label>2. Προβλεπόμενη Στολή</label>
+				<select name="prosopiko_2">
+				{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+				{% endfor %}
+				</select><br><br>
+			<label>3. Ευγένεια / Επεξήγηση Ποικιλιών Καφέ</label>
+				<select name="prosopiko_3">
+				{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+				{% endfor %}
+				</select><br><br>
+				
+		<h3>ΕΞΩΤΕΡΙΚΟΣ ΧΩΡΟΣ</h3>
+		
+			<label>1. Τέντες / Καρέκλες-Τραπέζια /Ταμπέλες</label>
+				<select name="exwterikos_1">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+				
+			<label>2.Καθαριότητα Χώρου</label>
+				<select name="exwterikos_2">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+			<label>3.Υλικό Marketing (Stant/Αυτοκόλλητα)</label>
+				<select name="exwterikos_3">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+			
+
+        <h3>ΕΣΩΤΕΡΙΚΟ ΚΑΘΙΣΤΙΚΟ</h3>
+		
+        <label>1. Τακτοποιημένα/Καθαρά Τραπέζια-Καρέκλες</label>
+				<select name="eswteriko_1">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+				
+		<label>2. Διαφημιστικό Υλικό</label>
+				<select name="eswteriko_2">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+				
+		<label>3. Καθαριότητα</label>
+				<select name="eswteriko_3">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+				
+		<label>4. Αναλώσιμα-Καθαριότητα WC - Ύπαρξη Σαπουνιού-Χαρτιού</label>
+				<select name="eswteriko_4">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+		
+
+        <h3>ΚΑΦΕΚΟΠΤΕΙΟ</h3>
+		
+        <label>1. Καθαριότητα</label>
+				<select name="kafekopteio_1">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+		
+		<label>2. Ευταξία -Προιόντα</label>
+				<select name="kafekopteio_2">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+				
+		<label>3. Πληρότητα Προιόντων</label>
+				<select name="kafekopteio_3">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+				
+		<label>4. Ταμπελάκια Τιμών</label>
+				<select name="kafekopteio_4">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+				
+		<label>5. Εντός Χρόνου Ζωής - ΠΕΡΙΠΤΩΣΗ ΜΗΔΕΝΙΣΜΟΥ ! </label>
+				<select name="kafekopteio_5">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+				
+		<label>6. Εγκεκριμένα Προιόντα</label>
+				<select name="kafekopteio_6">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+
+        <h3>ΖΕΣΤΗ ΒΙΤΡΙΝΑ</h3>
+		
+        <label>1. Καθαριότητα</label>
+				<select name="zesth_1">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+		<label>2. Θερμοκρασία</label>
+				<select name="zesth_2">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+		<label>3. Τοποθέτηση προιόντων</label>
+				<select name="zesth_3">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+		<label>4. Κωδικολόγιο</label>
+				<select name="zesth_4">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+		<label>5. Επαρκή Προιόντα</label>
+				<select name="zesth_5">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+		<label>6. Διαχείριση Εικόνας</label>
+				<select name="zesth_6">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+		<label>7. Ταμπελάκια Τιμών</label>
+				<select name="zesth_7">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+		<label>8. Εντός Χρόνου Ζωής</label>
+				<select name="zesth_8">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+		<label>9. Εγκεκριμένα Προιόντα</label>
+				<select name="zesth_9">
+					{% for val in range(5) %}
+					<option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+					{% endfor %}
+				</select><br><br>
+
+		<h3>ΚΡΥΑ ΒΙΤΡΙΝΑ</h3>
+
+        <label>1. Καθαριότητα</label>
+            <select name="krya_1">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+
+        <label>2. Θερμοκρασία</label>
+            <select name="krya_2">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+            </select><br><br>
+
+        <label>3. Τοποθέτηση προϊόντων</label>
+            <select name="krya_3">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+
+        <label>4. Κωδικολόγιο</label>
+            <select name="krya_4">
+            {% for val in range(5) %}
+                <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+            </select><br><br>
+
+        <label>5. Επαρκή προϊόντα</label>
+            <select name="krya_5">
+            {% for val in range(5) %}
+                <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+            </select><br><br>
+
+        <label>6. Διαχείριση - εικόνα</label>
+            <select name="krya_6">
+            {% for val in range(5) %}
+                <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+            </select><br><br>
+
+        <label>7. Ταμπελάκια τιμών</label>
+            <select name="krya_7">
+            {% for val in range(5) %}
+                <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+            </select><br><br>
+
+        <label>8. Εντός χρόνου ζωής</label>
+            <select name="krya_8">
+            {% for val in range(5) %}
+                <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+            </select><br><br>
+
+        <label>9. Εγκεκριμένα προϊόντα</label>
+            <select name="krya_9">
+            {% for val in range(5) %}
+                <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+            </select><br><br>
+
+
+        <hr><h3>ΟΥΔΕΤΕΡΗ ΒΙΤΡΙΝΑ</h3>
+        <label>1. Καθαριότητα</label>
+            <select name="oudet_1">
+            {% for val in range(5) %}
+                <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+            </select><br><br>
+        <label>2. Τοποθέτηση προϊόντων</label>
+            <select name="oudet_2">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>3. Κωδικόλογιο</label>
+            <select name="oudet_3">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>4. Επαρκή προϊόντα</label>
+            <select name="oudet_4">
+               {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>5. Διαχείριση - εικόνα</label>
+            <select name="oudet_5">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>6. Ταμπελάκια τιμών</label>
+            <select name="oudet_6">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>7. Εντός χρόνου ζωής</label>
+            <select name="oudet_7">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>8. Εγκεκριμένα προϊόντα</label>
+            <select name="oudet_8">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+
+
+        <hr><h3>ΠΡΟΙΟΝΤΑ ΑΥΘΑΙΡΕΤΗΣ ΠΩΛΗΣΗΣ</h3>
+        <label>1. Σωστή τοποθέτηση</label>
+            <select name="ayth_1">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>2. Κωδικόλογιο</label>
+            <select name="ayth_2">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>3. Επάρκεια</label>
+            <select name="ayth_3">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>4. Ταμπελάκια τιμών</label>
+            <select name="ayth_4">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>5. Εντός χρόνου ζωής</label>
+            <select name="ayth_5">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>6. Εγκεκριμένα προϊόντα</label>
+            <select name="ayth_6">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+
+
+        <hr><h3>ΨΥΓΕΙΑ</h3>
+        <label>1. Καθαριότητα</label>
+            <select name="psygeia_1">
+                {% for val in range(5) %}
+                        <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>2. Σωστή τοποθέτηση</label>
+            <select name="psygeia_2">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>3. Κωδικόλογιο</label>
+            <select name="psygeia_3">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>4. Επάρκεια</label>
+            <select name="psygeia_4">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>5. Ταμπελάκια τιμών</label>
+                <select name="psygeia_5">
+                    {% for val in range(5) %}
+                        <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                    {% endfor %}
+                </select><br><br>
+        <label>6. Εντός χρόνου ζωής</label>
+            <select name="psygeia_6">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>7. Εγκεκριμένα προϊόντα</label>
+            <select name="psygeia_7">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+
+
+       <hr><h3>ΔΙΑΦΗΜΙΣΤΙΚΟ ΥΛΙΚΟ - ΣΗΜΑΝΣΕΙΣ</h3>
+        <label>1. Ταμείο</label>
+            <select name="diaf_1">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>2. Βιτρίνες</label>
+            <select name="diaf_2">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>3. Πίνακας αλλεργιογόνα</label>
+            <select name="diaf_3">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>4. Πόστο καφέ</label>
+            <select name="diaf_4">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+
+
+
+        <hr><h3>ΑΠΟΘΗΚΗ</h3>
+        <label>1. Καθαριότητα</label>
+            <select name="apoth_1">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>2. Ευταξία</label>
+            <select name="apoth_2">
+                {% for val in range(5) %}
+                <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>3. Δεν υπάρχουν προϊόντα στο πάτωμα</label>
+            <select name="apoth_3">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>4. Διαχωρισμός χημικών</label>
+            <select name="apoth_4">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>5. Καθαρές καταψύξεις αποψυγμένες</label>
+            <select name="apoth_5">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>6. Σημάνσεις στα προϊόντα (LOT)</label>
+            <select name="apoth_6">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>7. Προϊόντα εντός χρόνου ζωής</label>
+            <select name="apoth_7">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>8. Εγκεκριμένα προϊόντα</label>
+            <select name="apoth_8">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+
+
+        <hr><h3>ΠΟΣΤΟ ΚΑΦΕ</h3>
+        <label>1. Καθαριότητα πόστου</label>
+            <select name="posto_1">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>2. Καθαριότητα μηχανής</label>
+            <select name="posto_2">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>3. Μαύρα πανάκια</label>
+            <select name="posto_3">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>4. Λάστιχο πάγκου Φ20</label>
+            <select name="posto_4">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>5. Σωστή παρασκευή σοκολάτας</label>
+            <select name="posto_5">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>6. Ποσότητα καφέ στους μύλους</label>
+            <select name="posto_6">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>7. Καθαριότητα μύλων</label>
+            <select name="posto_7">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>8. Γραμμάρια καφέ</label>
+            <select name="posto_8">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                    {% endfor %}
+            </select><br><br>
+        <label>9. Εκχύλιση καφέ</label>
+            <select name="posto_9">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>10. Φίλτρο νερού</label>
+            <select name="posto_10">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>11. Καθαριότητα γαλατιέρας</label>
+            <select name="posto_11">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>12. Ύπαρξη εγχειριδίου καφέ</label>
+                <select name="posto_12">
+                    {% for val in range(5) %}
+                        <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                    {% endfor %}
+                </select><br><br>
+        <label>13. Σωστή εκτέλεση συνταγών</label>
+            <select name="posto_13">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>14. Προϊόντα εντός χρόνου ζωής</label>
+            <select name="posto_14">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>15. Εγκεκριμένα προϊόντα</label>
+            <select name="posto_15">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+
+
+        <hr><h3>ΕΞΟΠΛΙΣΜΟΣ</h3>
+        <label>1. Καθαριότητα φούρνου</label>
+            <select name="exopl_1">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>2. Καθαριότητα λαμαρίνες</label>
+            <select name="exopl_2">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>3. Καθαριότητα blender</label>
+                <select name="exopl_3">
+                    {% for val in range(5) %}
+                        <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                    {% endfor %}
+                </select><br><br>
+        <label>4. Καθαριότητα τοστιέρα</label>
+            <select name="exopl_4">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                    {% endfor %}
+            </select><br><br>
+
+
+        <hr><h3>ΥΠΟΧΡΕΩΤΙΚΑ ΕΓΓΡΑΦΑ</h3>
+        <label>1. Βιβλίο παραπόνων</label>
+            <select name="eggrafa_1">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+        <label>2. Βιβλίο καπνίσματος</label>
+            <select name="eggrafa_2">
+                {% for val in range(5) %}
+                    <option value="{{ val }}" {% if val == 4 %}selected{% endif %}>{{ val }}</option>
+                {% endfor %}
+            </select><br><br>
+
+
+        <!-- ... (Όλες οι άλλες κατηγορίες χωρίς καμία αλλαγή) -->
+
+        <!-- Τέλος -->
+        <button type="submit">Υποβολή Checklist</button>
+    </form>
+</body>
+</html>

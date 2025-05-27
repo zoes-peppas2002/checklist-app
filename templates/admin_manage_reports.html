@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>Διαχείριση Αναφορών</title>
+</head>
+<body>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px;">
+        <a href="{{ url_for('dashboard') }}" style="font-size: 14px;">⬅ Dashboard</a>
+        <a href="{{ url_for('logout') }}" style="font-size: 14px; color: red;">Αποσύνδεση</a>
+    </div>
+    <hr>
+    
+    <h2>Διαχείριση Αναφορών</h2>
+
+    <form method="GET">
+        <label for="consultant">Σύμβουλος:</label>
+        <select name="consultant" onchange="this.form.submit()">
+            <option disabled selected>-- Επιλογή --</option>
+            {% for c in consultants %}
+                <option value="{{ c }}" {% if c == selected_consultant %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+
+        {% if selected_consultant %}
+        <label for="date">Ημερομηνία:</label>
+        <select name="date" onchange="this.form.submit()">
+            <option disabled selected>-- Επιλογή --</option>
+            {% for d in consultant_dates %}
+                <option value="{{ d }}" {% if d == selected_date %}selected{% endif %}>{{ d }}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+    </form>
+
+    {% if selected_consultant and selected_date %}
+        <h3>{{ selected_consultant }} — {{ selected_date }}</h3>
+        <ul>
+            {% for file in report_files %}
+                <li>
+                    <a href="{{ file }}" target="_blank">{{ file.split('/')[-1] }}</a>
+                    <form action="{{ url_for('delete_report') }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="file_path" value="{{ file }}">
+                        <button type="submit" style="color: red;">Διαγραφή</button>
+                    </form>
+                    <form action="{{ url_for('toggle_report_visibility') }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="file_path" value="{{ file }}">
+                        <button type="submit">Απόκρυψη</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

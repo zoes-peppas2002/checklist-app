@@ -1,0 +1,26 @@
+<!-- checklist_result.html -->
+<!DOCTYPE html>
+<html lang="el">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background-color: #f9f9f9;">
+    <a href="{{ url_for('dashboard') }}" style="font-size: 14px; color: #333; text-decoration: none;">⬅ Dashboard</a>
+    <a href="{{ url_for('logout') }}" style="font-size: 14px; color: red; text-decoration: none;">Αποσύνδεση</a>
+</div>
+<hr style="margin-top: 5px;">
+<head>
+    <meta charset="UTF-8">
+    <title>Αποτέλεσμα Checklist</title>
+</head>
+<body>
+    <h2>✅ Υποβλήθηκε επιτυχώς!</h2>
+
+    <p><strong>Σκορ:</strong> {{ score }}%</p>
+
+    {% if cutoff %}
+        <p style="color:red;"><strong>⚠️ Εντοπίστηκε κριτήριο-κόφτης με μηδενική βαθμολογία. Το συνολικό σκορ μηδενίστηκε.</strong></p>
+    {% else %}
+        <p>Συγχαρητήρια! Η αξιολόγηση ολοκληρώθηκε κανονικά.</p>
+    {% endif %}
+
+    <a href="{{ url_for('dashboard') }}">🔙 Επιστροφή στο Dashboard</a>
+</body>
+</html>

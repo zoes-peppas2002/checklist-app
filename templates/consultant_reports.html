@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Τα Reports μου</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 16px;
+            background-color: #fefefa; /* Μπορείς να αλλάξεις το χρώμα εδώ */
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .top-bar a {
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .logout {
+            color: red;
+        }
+
+        h2, h3 {
+            margin-top: 20px;
+            font-size: 22px;
+        }
+
+        select, button {
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        a.report-link {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="{{ url_for('dashboard') }}">⬅ Dashboard</a>
+    <a href="{{ url_for('logout') }}" class="logout">Αποσύνδεση</a>
+</div>
+
+<h2>📂 Επιλέξτε κατάστημα</h2>
+
+<form method="POST">
+    <select name="store_name">
+        {% for store in stores %}
+            <option value="{{ store }}" {% if store == selected_store %}selected{% endif %}>{{ store }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Προβολή</button>
+</form>
+
+{% if selected_store %}
+    <h3>Αναφορές για {{ selected_store }}</h3>
+    <ul>
+        {% for report in reports %}
+            <li><a href="{{ report }}" class="report-link" target="_blank">{{ report.split('/')[-1] }}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+</body>
+</html>

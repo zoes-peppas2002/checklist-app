@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>Πίνακας Διαχείρισης</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light text-dark">
+
+<div class="container py-4">
+
+    <!-- Top bar -->
+    <div class="d-flex justify-content-between mb-4">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm">⬅ Επιστροφή</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Αποσύνδεση</a>
+    </div>
+
+    <h2 class="mb-4">Προσθήκη Χρήστη</h2>
+
+    <form method="POST" class="bg-white p-4 rounded shadow-sm">
+        <div class="mb-3">
+            <label class="form-label">Όνομα Χρήστη:</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Κωδικός:</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ρόλος:</label>
+            <select name="role" class="form-select" required>
+                <option value="consultant">Σύμβουλος</option>
+            </select>
+        </div>
+
+        <button type="submit" name="add_user" class="btn btn-success">Προσθήκη</button>
+    </form>
+
+    <hr class="my-4">
+
+    <h3>Υπάρχοντες Χρήστες:</h3>
+    <ul class="list-group">
+        {% for user in users %}
+            <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-center mb-2">
+                <div>
+                    <strong>{{ user.username }}</strong> — {{ user.role }}
+                </div>
+                <div class="d-flex flex-column flex-md-row gap-2 mt-2 mt-md-0">
+                    {% if user.role in ['consultant', 'manager'] %}
+                        <form method="POST" class="d-flex flex-row gap-2">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <input type="password" name="new_password" class="form-control form-control-sm" placeholder="Νέος κωδικός" required>
+                            <button type="submit" name="reset_password" class="btn btn-warning btn-sm">Reset</button>
+                        </form>
+                    {% endif %}
+                    {% if user.role != 'admin' %}
+                        <form method="POST">
+                            <input type="hidden" name="delete_user_id" value="{{ user.id }}">
+                            <button type="submit" name="delete_user" class="btn btn-danger btn-sm" onclick="return confirm('Είστε σίγουρος;')">Διαγραφή</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+</body>
+</html>

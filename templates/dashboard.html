@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-image: url("{{ url_for('static', filename='bg.jpg') }}");
+            background-size: container;
+            background-position: bottom 150px right 80px;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0px;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 25px 20px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #D8D8D8;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+
+        .logout-link {
+            color: red;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .dashboard-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #FFFF00;
+            padding: 14px 20px;
+            margin: 12px auto;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 12px;
+            font-size: 20px;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+
+        .dashboard-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .dashboard-button span {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="header-bar">
+            Καλώς ήρθες, {{ username }}!
+            <a class="logout-link" href="{{ url_for('logout') }}">Αποσύνδεση</a>
+        </div>
+
+        {% if role == 'consultant' %}
+            <a class="dashboard-button" href="{{ url_for('checklist_form') }}">
+                <span>📝</span> Καταχώρησε νέο checklist
+            </a>
+            <a class="dashboard-button" href="{{ url_for('my_reports') }}">
+                <span>📁</span> Τα Reports μου
+            </a>
+
+
+        {% elif role == 'admin' %}
+            <a class="dashboard-button" href="{{ url_for('admin_panel') }}">
+                <span>👤</span> Διαχείριση χρηστών
+            </a>
+            <a class="dashboard-button" href="{{ url_for('manage_stores') }}">
+                <span>🏪</span> Διαχείριση καταστημάτων
+            </a>
+            <a class="dashboard-button" href="{{ url_for('admin_reports') }}">
+                <span>🛠️</span> Διαχείριση αναφορών
+            </a>
+        {% else %}
+            <p>Ρόλος άγνωστος.</p>
+        {% endif %}
+
+    </div>
+</body>
+</html>
