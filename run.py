@@ -9,6 +9,7 @@ from flask import send_from_directory
 from extensions import db, login_manager
 from models_def import User, Checklist
 import json
+app = Flask(__name__)
 
 
 
