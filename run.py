@@ -208,12 +208,15 @@ def submit_checklist():
 
     from fpdf import FPDF
     import cloudinary.uploader
+    import pytz
+    import uuid
 
+    tz = pytz.timezone('Europe/Athens')
+    date_created = datetime.now(tz)
     store_name = request.form.get('store_name')
     consultant_name = current_user.username
-    date_created = datetime.now()
 
-    # Λίστες πεδίων
+	# Λίστες πεδίων
     field_names = [# ΠΡΟΣΩΠΙΚΟ
         'prosopiko_1', 'prosopiko_2', 'prosopiko_3',
 
@@ -255,29 +258,24 @@ def submit_checklist():
         'exopl_1', 'exopl_2', 'exopl_3', 'exopl_4',
 
         # ΥΠΟΧΡΕΩΤΙΚΑ ΕΓΓΡΑΦΑ
-        'eggrafa_1', 'eggrafa_2']  # Εδώ βάλε τη λίστα σου
+        'eggrafa_1', 'eggrafa_2']
+
     cutoff_fields = [
-		'kafekopteio_5', 'kafekopteio_6', 'zesth_8', 'zesth_9',
+        'kafekopteio_5', 'kafekopteio_6', 'zesth_8', 'zesth_9',
         'krya_8', 'krya_9', 'oudet_8', 'ayth_5', 'ayth_6',
-        'psygeia_6', 'psygeia_7', 'apoth_7', 'posto_8', 'posto_9', 'posto_14', 'posto_15']  # Εδώ βάλε τη λίστα με τους κόφτες
-    CATEGORY_WEIGHTS = { "prosopiko": 0.05,
-        "exwterikos": 0.05,
-        "eswteriko": 0.05,
-        "kafekopteio": 0.1,
-        "zesth": 0.08,
-        "krya": 0.08,
-        "oudet": 0.08,
-        "ayth": 0.07,
-        "psygeia": 0.07,
-        "diaf": 0.05,
-        "apoth": 0.07,
-        "posto": 0.15,
-        "exopl": 0.07,
-        "eggrafa": 0.03}  # Εδώ βάλε το λεξικό με τις βαρύτητες
+        'psygeia_6', 'psygeia_7', 'apoth_7', 'posto_8',
+        'posto_9', 'posto_14', 'posto_15'
+    ]
 
-    data = {}
-    has_zero_cutoff = False
+    CATEGORY_WEIGHTS = {
+        "prosopiko": 0.05, "exwterikos": 0.05, "eswteriko": 0.05,
+        "kafekopteio": 0.1, "zesth": 0.08, "krya": 0.08,
+        "oudet": 0.08, "ayth": 0.07, "psygeia": 0.07,
+        "diaf": 0.05, "apoth": 0.07, "posto": 0.15,
+        "exopl": 0.07, "eggrafa": 0.03
+    }
 
+    data, has_zero_cutoff = {}, False
     for field in field_names:
         val = int(request.form.get(field, 0))
         data[field] = val
@@ -296,10 +294,9 @@ def submit_checklist():
                 weighted_score += (actual_score / max_score) * weight
         total_score = round(weighted_score * 100, 2)
 
-    # Δημιουργία PDF
-    filename = f"{date_created.strftime('%Y-%m-%d_%H-%M')}_report.pdf"
-    local_path = os.path.join("temp", filename)
-    os.makedirs("temp", exist_ok=True)
+    # Δημιουργία PDF προσωρινά
+    local_path = os.path.join("temp_pdf", f"{uuid.uuid4()}.pdf")
+    os.makedirs("temp_pdf", exist_ok=True)
 
     pdf = FPDF()
     pdf.add_page()
@@ -312,16 +309,21 @@ def submit_checklist():
     pdf.cell(200, 10, txt=f"Σκορ: {total_score}%", ln=True)
     pdf.cell(200, 10, txt=f"Κόφτης: {'ΝΑΙ' if has_zero_cutoff else 'ΟΧΙ'}", ln=True)
     pdf.ln(10)
+
     for key, value in data.items():
         pdf.cell(200, 8, txt=f"{key}: {value}", ln=True)
     pdf.output(local_path)
 
     # Upload στο Cloudinary
-    upload_result = cloudinary.uploader.upload(local_path, folder=f"{consultant_name}/{store_name}", resource_type="raw")
+    upload_result = cloudinary.uploader.upload(
+        local_path,
+        folder=f"{consultant_name}/{store_name}",
+        resource_type="raw"
+    )
     pdf_url = upload_result["secure_url"]
     os.remove(local_path)
 
-    # Αποθήκευση DB
+    # Αποθήκευση στη βάση
     checklist = Checklist(
         store_name=store_name,
         consultant_name=consultant_name,
@@ -422,10 +424,10 @@ def my_reports():
     if current_user.role != 'consultant':
         return "Απαγορεύεται η πρόσβαση", 403
 
+    store_map_path = os.path.join("static", "store_map.json")
     selected_store = None
     reports = []
 
-    store_map_path = os.path.join("static", "store_map.json")
     if not os.path.exists(store_map_path):
         return "Το αρχείο store_map.json δεν βρέθηκε."
 
@@ -436,19 +438,18 @@ def my_reports():
 
     if request.method == 'POST':
         selected_store = request.form.get('store_name')
-        if selected_store in consultant_stores:
+        if selected_store and selected_store in consultant_stores:
             reports = Checklist.query.filter_by(
                 consultant_name=current_user.username,
                 store_name=selected_store
             ).order_by(Checklist.date_created.desc()).all()
 
     return render_template(
-        "consultant_reports.html",
+        'consultant_reports.html',
         stores=consultant_stores,
         selected_store=selected_store,
         reports=reports
     )
-
 
 
 
