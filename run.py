@@ -288,23 +288,19 @@ def submit_checklist():
         total_score = 0
     else:
         weighted_score = 0
-        debug_info = []
         for prefix, weight in CATEGORY_WEIGHTS.items():
             relevant = [v for k, v in data.items() if k.startswith(prefix)]
             max_score = len(relevant) * 4
             actual_score = sum(relevant)
             if max_score > 0:
-                contribution = (actual_score / max_score) * weight
-                weighted_score += contribution
-                debug_info.append(
-                    f"[{prefix}] {len(relevant)} πεδία, "
-                    f"Βαρύτητα: {weight}, "
-                    f"Score: {actual_score}/{max_score}, "
-                    f"Συνεισφορά: {round(contribution*100, 2)}%"
-                )
+                weighted_score += (actual_score / max_score) * weight
         total_score = round(weighted_score * 100, 2)
 
     # Δημιουργία PDF
+    filename = f"{date_created.strftime('%Y-%m-%d_%H-%M')}_report.pdf"
+    local_path = os.path.join("temp", filename)
+    os.makedirs("temp", exist_ok=True)
+
     pdf = FPDF()
     pdf.add_page()
     pdf.add_font('DejaVu', '', 'static/fonts/DejaVuSans.ttf', uni=True)
@@ -318,18 +314,14 @@ def submit_checklist():
     pdf.ln(10)
     for key, value in data.items():
         pdf.cell(200, 8, txt=f"{key}: {value}", ln=True)
-
-    local_path = f"temp_{consultant_name}_{store_name}_{date_created.strftime('%Y%m%d_%H%M%S')}.pdf"
     pdf.output(local_path)
 
     # Upload στο Cloudinary
-    upload_result = cloudinary.uploader.upload(local_path, resource_type="raw")
-    pdf_url = upload_result.get("secure_url")
-
-    # Αφαίρεση τοπικού προσωρινού αρχείου
+    upload_result = cloudinary.uploader.upload(local_path, folder=f"{consultant_name}/{store_name}", resource_type="raw")
+    pdf_url = upload_result["secure_url"]
     os.remove(local_path)
 
-    # Αποθήκευση στη Βάση
+    # Αποθήκευση DB
     checklist = Checklist(
         store_name=store_name,
         consultant_name=consultant_name,
@@ -430,10 +422,10 @@ def my_reports():
     if current_user.role != 'consultant':
         return "Απαγορεύεται η πρόσβαση", 403
 
-    store_map_path = os.path.join("static", "store_map.json")
     selected_store = None
     reports = []
 
+    store_map_path = os.path.join("static", "store_map.json")
     if not os.path.exists(store_map_path):
         return "Το αρχείο store_map.json δεν βρέθηκε."
 
@@ -444,15 +436,14 @@ def my_reports():
 
     if request.method == 'POST':
         selected_store = request.form.get('store_name')
-        if selected_store and selected_store in consultant_stores:
-            # Αντλούμε αναφορές από τη βάση δεδομένων με βάση τον σύμβουλο και το κατάστημα
+        if selected_store in consultant_stores:
             reports = Checklist.query.filter_by(
                 consultant_name=current_user.username,
                 store_name=selected_store
             ).order_by(Checklist.date_created.desc()).all()
 
     return render_template(
-        'consultant_reports.html',
+        "consultant_reports.html",
         stores=consultant_stores,
         selected_store=selected_store,
         reports=reports

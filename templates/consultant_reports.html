@@ -89,13 +89,8 @@
     <h3>Αναφορές για {{ selected_store }}</h3>
     <ul>
         {% for report in reports %}
-            <li>
-                <a href="{{ report.pdf_url }}" class="report-link" target="_blank">
-                    📄 Αναφορά {{ report.date_created.strftime('%Y-%m-%d %H:%M') }} | Σκορ: {{ report.total_score }}%
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+			<li><a href="{{ report.pdf_url }}" class="report-link" target="_blank">{{ report.date_created.strftime('%Y-%m-%d %H:%M') }}</a></li>
+		{% endfor %}
 {% endif %}
 
 </body>
