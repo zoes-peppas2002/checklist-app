@@ -1,15 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="el">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Τα Reports μου</title>
-	<a href="{{ checklist.pdf_url }}" target="_blank">📄 Προβολή Report</a>
     <style>
         body {
             font-family: sans-serif;
             padding: 16px;
-            background-color: #fefefa; /* Μπορείς να αλλάξεις το χρώμα εδώ */
+            background-color: #fefefa;
         }
 
         .top-bar {
@@ -89,7 +89,11 @@
     <h3>Αναφορές για {{ selected_store }}</h3>
     <ul>
         {% for report in reports %}
-            <li><a href="{{ report }}" class="report-link" target="_blank">{{ report.split('/')[-1] }}</a></li>
+            <li>
+                <a href="{{ report.pdf_url }}" class="report-link" target="_blank">
+                    📄 Αναφορά {{ report.date_created.strftime('%Y-%m-%d %H:%M') }} | Σκορ: {{ report.total_score }}%
+                </a>
+            </li>
         {% endfor %}
     </ul>
 {% endif %}

@@ -139,6 +139,7 @@ class Checklist(db.Model):
     # Τελικά πεδία
     total_score = db.Column(db.Float, nullable=False)
     has_zero_cutoff = db.Column(db.Boolean, default=False)
+    pdf_url = db.Column(db.String(500))
 
 class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)

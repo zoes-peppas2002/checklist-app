@@ -14,6 +14,7 @@ app = Flask(__name__)
 import cloudinary
 import cloudinary.uploader
 
+
 cloudinary.config( 
   cloud_name = "drqv7toqp", 
   api_key = "682797145115518", 
@@ -206,12 +207,73 @@ def submit_checklist():
         return "Απαγορεύεται η πρόσβαση", 403
 
     from fpdf import FPDF
+    import cloudinary.uploader
 
     store_name = request.form.get('store_name')
     consultant_name = current_user.username
     date_created = datetime.now()
 
-    # ... (Όλα τα field_names, cutoff_fields και CATEGORY_WEIGHTS όπως τα έχεις ήδη)
+    # Λίστες πεδίων
+    field_names = [# ΠΡΟΣΩΠΙΚΟ
+        'prosopiko_1', 'prosopiko_2', 'prosopiko_3',
+
+        # ΕΞΩΤΕΡΙΚΟΣ ΧΩΡΟΣ
+        'exwterikos_1','exwterikos_2','exwterikos_3',
+
+        # ΕΣΩΤΕΡΙΚΟ ΚΑΘΙΣΤΙΚΟ
+        'eswteriko_1', 'eswteriko_2', 'eswteriko_3', 'eswteriko_4',
+
+        # ΚΑΦΕΚΟΠΤΕΙΟ
+        'kafekopteio_1', 'kafekopteio_2', 'kafekopteio_3', 'kafekopteio_4', 'kafekopteio_5', 'kafekopteio_6',
+
+        # ΖΕΣΤΗ ΒΙΤΡΙΝΑ
+        'zesth_1', 'zesth_2', 'zesth_3', 'zesth_4', 'zesth_5', 'zesth_6', 'zesth_7', 'zesth_8', 'zesth_9',
+
+        # ΚΡΥΑ ΒΙΤΡΙΝΑ
+        'krya_1', 'krya_2', 'krya_3', 'krya_4', 'krya_5', 'krya_6', 'krya_7', 'krya_8', 'krya_9',
+
+        # ΟΥΔΕΤΕΡΗ ΒΙΤΡΙΝΑ
+        'oudet_1', 'oudet_2', 'oudet_3', 'oudet_4', 'oudet_5', 'oudet_6', 'oudet_7', 'oudet_8', 
+
+        # ΠΡΟΪΟΝΤΑ ΑΥΘΑΙΡΕΤΗΣ ΠΩΛΗΣΗΣ
+        'ayth_1', 'ayth_2', 'ayth_3', 'ayth_4', 'ayth_5', 'ayth_6',
+
+        # ΨΥΓΕΙΑ
+        'psygeia_1', 'psygeia_2', 'psygeia_3', 'psygeia_4', 'psygeia_5', 'psygeia_6', 'psygeia_7',
+
+        # ΔΙΑΦΗΜΙΣΤΙΚΟ ΥΛΙΚΟ - ΣΗΜΑΝΣΕΙΣ
+        'diaf_1', 'diaf_2', 'diaf_3', 'diaf_4',
+
+        # ΑΠΟΘΗΚΗ
+        'apoth_1', 'apoth_2', 'apoth_3', 'apoth_4', 'apoth_5', 'apoth_6', 'apoth_7', 'apoth_8',
+
+        # ΠΟΣΤΟ ΚΑΦΕ
+        'posto_1', 'posto_2', 'posto_3', 'posto_4', 'posto_5', 'posto_6', 'posto_7',
+        'posto_8', 'posto_9', 'posto_10', 'posto_11', 'posto_12', 'posto_13', 'posto_14', 'posto_15',
+
+        # ΕΞΟΠΛΙΣΜΟΣ
+        'exopl_1', 'exopl_2', 'exopl_3', 'exopl_4',
+
+        # ΥΠΟΧΡΕΩΤΙΚΑ ΕΓΓΡΑΦΑ
+        'eggrafa_1', 'eggrafa_2']  # Εδώ βάλε τη λίστα σου
+    cutoff_fields = [
+		'kafekopteio_5', 'kafekopteio_6', 'zesth_8', 'zesth_9',
+        'krya_8', 'krya_9', 'oudet_8', 'ayth_5', 'ayth_6',
+        'psygeia_6', 'psygeia_7', 'apoth_7', 'posto_8', 'posto_9', 'posto_14', 'posto_15']  # Εδώ βάλε τη λίστα με τους κόφτες
+    CATEGORY_WEIGHTS = { "prosopiko": 0.05,
+        "exwterikos": 0.05,
+        "eswteriko": 0.05,
+        "kafekopteio": 0.1,
+        "zesth": 0.08,
+        "krya": 0.08,
+        "oudet": 0.08,
+        "ayth": 0.07,
+        "psygeia": 0.07,
+        "diaf": 0.05,
+        "apoth": 0.07,
+        "posto": 0.15,
+        "exopl": 0.07,
+        "eggrafa": 0.03}  # Εδώ βάλε το λεξικό με τις βαρύτητες
 
     data = {}
     has_zero_cutoff = False
@@ -227,30 +289,22 @@ def submit_checklist():
     else:
         weighted_score = 0
         debug_info = []
-
         for prefix, weight in CATEGORY_WEIGHTS.items():
             relevant = [v for k, v in data.items() if k.startswith(prefix)]
             max_score = len(relevant) * 4
             actual_score = sum(relevant)
-
             if max_score > 0:
                 contribution = (actual_score / max_score) * weight
                 weighted_score += contribution
-                debug_info.append(f"[{prefix}] {len(relevant)} πεδία, Βαρύτητα: {weight}, Score: {actual_score}/{max_score}, Συνεισφορά: {round(contribution*100, 2)}%")
-
+                debug_info.append(
+                    f"[{prefix}] {len(relevant)} πεδία, "
+                    f"Βαρύτητα: {weight}, "
+                    f"Score: {actual_score}/{max_score}, "
+                    f"Συνεισφορά: {round(contribution*100, 2)}%"
+                )
         total_score = round(weighted_score * 100, 2)
 
-    print("\nDEBUG ΕΛΕΓΧΟΣ ΒΑΡΥΤΗΤΩΝ:")
-    for line in debug_info:
-        print(line)
-    print(f"--> Τελικό σκορ: {total_score}%\n")
-
-    # Αποθήκευση PDF τοπικά (προσωρινά)
-    folder_path = os.path.join("temp_reports")
-    os.makedirs(folder_path, exist_ok=True)
-    filename = f"{date_created.strftime('%Y-%m-%d_%H-%M')}_report.pdf"
-    pdf_path = os.path.join(folder_path, filename)
-
+    # Δημιουργία PDF
     pdf = FPDF()
     pdf.add_page()
     pdf.add_font('DejaVu', '', 'static/fonts/DejaVuSans.ttf', uni=True)
@@ -264,27 +318,29 @@ def submit_checklist():
     pdf.ln(10)
     for key, value in data.items():
         pdf.cell(200, 8, txt=f"{key}: {value}", ln=True)
-    pdf.output(pdf_path)
 
-    # ✅ Ανέβασέ το στο Cloudinary
-    upload_result = cloudinary.uploader.upload(pdf_path, resource_type='raw')
-    pdf_url = upload_result['secure_url']
+    local_path = f"temp_{consultant_name}_{store_name}_{date_created.strftime('%Y%m%d_%H%M%S')}.pdf"
+    pdf.output(local_path)
 
-    # Αποθήκευση στο DB
+    # Upload στο Cloudinary
+    upload_result = cloudinary.uploader.upload(local_path, resource_type="raw")
+    pdf_url = upload_result.get("secure_url")
+
+    # Αφαίρεση τοπικού προσωρινού αρχείου
+    os.remove(local_path)
+
+    # Αποθήκευση στη Βάση
     checklist = Checklist(
-    store_name=store_name,
-    consultant_name=consultant_name,
-    date_created=date_created,
-    total_score=total_score,
-    has_zero_cutoff=has_zero_cutoff,
-    pdf_url=cloudinary_url,
-    **data
-)
+        store_name=store_name,
+        consultant_name=consultant_name,
+        date_created=date_created,
+        total_score=total_score,
+        has_zero_cutoff=has_zero_cutoff,
+        pdf_url=pdf_url,
+        **data
+    )
     db.session.add(checklist)
     db.session.commit()
-
-    # Προαιρετικά: σβήσιμο τοπικού αρχείου
-    os.remove(pdf_path)
 
     return render_template("checklist_result.html", score=total_score, cutoff=has_zero_cutoff)
 
@@ -389,13 +445,11 @@ def my_reports():
     if request.method == 'POST':
         selected_store = request.form.get('store_name')
         if selected_store and selected_store in consultant_stores:
-            report_dir = os.path.join('static', 'reports', current_user.username, selected_store)
-            if os.path.exists(report_dir):
-                for file in os.listdir(report_dir):
-                    if file.endswith('.pdf'):
-                        rel_path = os.path.join('/static/reports', current_user.username, selected_store, file)
-                        reports.append(rel_path)
-                reports.sort()
+            # Αντλούμε αναφορές από τη βάση δεδομένων με βάση τον σύμβουλο και το κατάστημα
+            reports = Checklist.query.filter_by(
+                consultant_name=current_user.username,
+                store_name=selected_store
+            ).order_by(Checklist.date_created.desc()).all()
 
     return render_template(
         'consultant_reports.html',
