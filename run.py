@@ -318,7 +318,7 @@ def submit_checklist():
     upload_result = cloudinary.uploader.upload(
         local_path,
         folder=f"{consultant_name}/{store_name}",
-        resource_type="raw"
+        resource_type="upload"
     )
     pdf_url = upload_result["secure_url"]
     os.remove(local_path)
