@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 from fpdf import FPDF
 from flask import send_from_directory
+from flask_sqlalchemy import SQLAlchemy
 
 from extensions import db, login_manager
 from models_def import User, Checklist
@@ -20,6 +21,8 @@ cloudinary.config(
   api_key = "682797145115518", 
   api_secret = "3VoGRlvNk9XryqS8Lvx2g1FBL4o"
 )
+
+
 
 
 
@@ -39,10 +42,13 @@ def save_store_map(store_map):
 # --- Flask setup ---
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'database.db')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Zoupeppas2002!@localhost/checklist_app'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy(app)
 
 # --- Init Extensions ---
-db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
