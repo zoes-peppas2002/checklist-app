@@ -4,7 +4,7 @@ from extensions import db, login_manager
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
+    password = db.Column(db.String(500), nullable=False)  # Increased from 150 to 500 to accommodate longer password hashes
     role = db.Column(db.String(20), nullable=False)
 
 # Note: The user_loader is now defined in run.py to avoid circular imports
@@ -14,8 +14,8 @@ from extensions import db
 
 class Checklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    store_name = db.Column(db.String(100), nullable=False)
-    consultant_name = db.Column(db.String(100), nullable=False)
+    store_name = db.Column(db.String(200), nullable=False)  # Increased from 100 to 200 for longer store names
+    consultant_name = db.Column(db.String(200), nullable=False)  # Increased from 100 to 200 for longer consultant names
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     # ΠΡΟΣΩΠΙΚΟ
@@ -137,12 +137,12 @@ class Checklist(db.Model):
     # Τελικά πεδία
     total_score = db.Column(db.Float, nullable=False)
     has_zero_cutoff = db.Column(db.Boolean, default=False)
-    pdf_url = db.Column(db.String(500))
+    pdf_url = db.Column(db.String(1000))  # Increased from 500 to 1000 to accommodate longer URLs
 
 class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
-    address = db.Column(db.String(200), nullable=False)
+    name = db.Column(db.String(200), nullable=False)  # Increased from 150 to 200 for longer store names
+    address = db.Column(db.String(300), nullable=False)  # Increased from 200 to 300 for longer addresses
     consultant_username = db.Column(db.String(150), db.ForeignKey('user.username'), nullable=False)
 
     def __repr__(self):
