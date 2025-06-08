@@ -6,16 +6,20 @@ import os
 from fpdf import FPDF
 from flask import send_from_directory
 from flask_sqlalchemy import SQLAlchemy
+import json
+import sys
+import requests
 
 from extensions import db, login_manager
 from models_def import User, Checklist
-import json
+from storage import load_store_map, save_store_map
+
 app = Flask(__name__)
 
 import cloudinary
 import cloudinary.uploader
 
-
+# Configure Cloudinary
 cloudinary.config( 
   cloud_name = "drqv7toqp", 
   api_key = "682797145115518", 
@@ -26,27 +30,27 @@ cloudinary.config(
 
 
 
-STORE_FILE = os.path.join("static", "store_map.json")
-
-def load_store_map():
-    if os.path.exists(STORE_FILE):
-        with open(STORE_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
-
-def save_store_map(store_map):
-    with open(STORE_FILE, 'w', encoding='utf-8') as f:
-        json.dump(store_map, f, ensure_ascii=False, indent=2)
+# Store map functions are now imported from storage.py
 
 
 # --- Flask setup ---
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'mysecretkey'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mysecretkey')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Zoupeppas2002!@localhost/checklist_app'
+# Database configuration
+# Check if running on Render (production)
+if 'RENDER' in os.environ:
+    # Use the DATABASE_URL provided by Render
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url and database_url.startswith('postgres://'):
+        # Heroku-style URL needs to be updated for SQLAlchemy 1.4+
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    # Local development database
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Zoupeppas2002!@localhost/checklist_app'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy(app)
+db.init_app(app)
 
 # --- Init Extensions ---
 login_manager.init_app(app)
@@ -575,4 +579,11 @@ from flask import send_from_directory
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    
+    # Get port from environment variable or use default
+    port = int(os.environ.get('PORT', 5000))
+    
+    # In production, debug should be False
+    debug = 'RENDER' not in os.environ
+    
+    app.run(debug=debug, host='0.0.0.0', port=port)

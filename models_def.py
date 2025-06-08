@@ -1,6 +1,5 @@
 from flask_login import UserMixin
 from extensions import db, login_manager
-from run import db
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -8,9 +7,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(150), nullable=False)
     role = db.Column(db.String(20), nullable=False)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+# Note: The user_loader is now defined in run.py to avoid circular imports
     
 from datetime import datetime
 from extensions import db
